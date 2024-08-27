@@ -53,10 +53,8 @@ def base_navbar() -> rx.Component:
                         rx.icon("menu", size=30)
                     ),
                     rx.menu.content(
-                        rx.menu.item("Home", href='/'),
-                        rx.menu.item("About", href='/about'),
-                        rx.menu.item("Pricing"),
-                        rx.menu.item("Contact"),
+                        rx.menu.item("Home", on_click=navigation.state.NavState.to_home),
+                        rx.menu.item("About", on_click=navigation.state.NavState.to_about_us),
                     ),
                     justify="end",
                 ),
