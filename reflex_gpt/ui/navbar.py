@@ -1,5 +1,7 @@
 import reflex as rx
 
+from reflex_gpt import navigation
+
 def navbar_link(text: str, url: str) -> rx.Component:
     return rx.link(
         rx.text(text, size="4", weight="medium"), href=url
@@ -23,10 +25,8 @@ def base_navbar() -> rx.Component:
                     align_items="center",
                 ),
                 rx.hstack(
-                    navbar_link("Home", "/#"),
-                    navbar_link("About", "/#"),
-                    navbar_link("Pricing", "/#"),
-                    navbar_link("Contact", "/#"),
+                    navbar_link("Home", navigation.routes.HOME_ROUTE),
+                    navbar_link("About", navigation.routes.ABOUT_US_ROUTE),
                     justify="end",
                     spacing="5",
                 ),
@@ -53,8 +53,8 @@ def base_navbar() -> rx.Component:
                         rx.icon("menu", size=30)
                     ),
                     rx.menu.content(
-                        rx.menu.item("Home"),
-                        rx.menu.item("About"),
+                        rx.menu.item("Home", href='/'),
+                        rx.menu.item("About", href='/about'),
                         rx.menu.item("Pricing"),
                         rx.menu.item("Contact"),
                     ),
