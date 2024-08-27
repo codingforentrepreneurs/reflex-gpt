@@ -10,5 +10,6 @@ def base_layout(*args, **kwargs) -> rx.Component:
             *args, 
             **kwargs,
         ),
-        base_footer()
+        base_footer(),
+        id='my-base-container'
     )
