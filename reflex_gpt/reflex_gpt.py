@@ -11,14 +11,27 @@ class State(rx.State):
     ...
 
 
-def index() -> rx.Component:
+def about_us() -> rx.Component:
+    # About us Page
+    return rx.container(
+        rx.color_mode.button(position="top-right"),
+        rx.vstack(
+            rx.heading("Welcome to Reflex About!", size="9"),
+            spacing="5",
+            justify="center",
+            min_height="85vh",
+        ),
+        rx.logo(),
+    )
+
+def home_page() -> rx.Component:
     # Welcome Page (Index)
     return rx.container(
         rx.color_mode.button(position="top-right"),
         rx.vstack(
-            rx.heading("Welcome to Reflex!", size="9"),
+            rx.heading("Welcome to Reflex GPT!", size="9"),
             rx.text(
-                "Get started by editing ",
+                "Get started by editing something like ",
                 rx.code(f"{config.app_name}/{config.app_name}.py"),
                 size="5",
             ),
@@ -36,4 +49,6 @@ def index() -> rx.Component:
 
 
 app = rx.App()
-app.add_page(index)
+app.add_page(home_page, route='/')
+app.add_page(about_us, route='/about')
+
