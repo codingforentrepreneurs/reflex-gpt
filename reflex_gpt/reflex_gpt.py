@@ -10,10 +10,18 @@ class State(rx.State):
 
     ...
 
+def navbar(child, *args, **kwargs) -> rx.Component:
+    return rx.heading(child, *args, **kwargs)
+
+def base_layout(*args, **kwargs) -> rx.Component:
+    return rx.container(
+        navbar("Navbar"), 
+        *args, **kwargs
+    )
 
 def about_us() -> rx.Component:
     # About us Page
-    return rx.container(
+    return base_layout(
         rx.color_mode.button(position="top-right"),
         rx.vstack(
             rx.heading("Welcome to Reflex About!", size="9"),
@@ -26,7 +34,7 @@ def about_us() -> rx.Component:
 
 def home_page() -> rx.Component:
     # Welcome Page (Index)
-    return rx.container(
+    return base_layout(
         rx.color_mode.button(position="top-right"),
         rx.vstack(
             rx.heading("Welcome to Reflex GPT!", size="9"),
