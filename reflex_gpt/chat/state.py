@@ -25,13 +25,13 @@ class ChatState(rx.State):
             print(results)
 
     def append_message(self, message, is_bot:bool=False):
-        if not is_bot:
-            with rx.session() as session:
-                obj =  ChatModel(
-                    title=message, 
-                )
-                session.add(obj)
-                session.commit()
+        # if not is_bot:
+        #     with rx.session() as session:
+        #         obj =  ChatModel(
+        #             title=message, 
+        #         )
+        #         session.add(obj)
+        #         session.commit()
         self.messages.append(
             ChatMessage(
                 message=message,
