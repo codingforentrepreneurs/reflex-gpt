@@ -1,7 +1,7 @@
 # import time
 from typing import List
 import reflex as rx
-
+from reflex_gpt.models import Chat
 from . import ai
 
 class ChatMessage(rx.Base):
@@ -17,6 +17,13 @@ class ChatState(rx.State):
     def user_did_submit(self) -> bool:
         return self.did_submit
     
+    def on_load(self):
+        with rx.session() as session:
+            results = session.exec(
+                Chat.select()
+            ).all()
+            print(results)
+
     def append_message(self, message, is_bot:bool=False):
         self.messages.append(
             ChatMessage(
