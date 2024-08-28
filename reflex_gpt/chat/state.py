@@ -1,7 +1,7 @@
 # import time
 from typing import List
 import reflex as rx
-from reflex_gpt.models import Chat as ChatModel
+from reflex_gpt.models import ChatSession as ChatModel
 from . import ai
 
 class ChatMessage(rx.Base):
