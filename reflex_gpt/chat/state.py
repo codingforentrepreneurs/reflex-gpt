@@ -20,7 +20,7 @@ class ChatState(rx.State):
         self.messages.append(
             ChatMessage(
                 message=message,
-                is_bot = False
+                is_bot = is_bot
             )
         )
 
