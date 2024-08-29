@@ -36,6 +36,7 @@ class ChatState(rx.State):
             db_session.commit() # actually save
             db_session.refresh(obj)
             self.chat_session = obj
+        return rx.redirect('/chat/{self.chat_session.id}')
 
     def clear_and_start_new(self):
         self.chat_session = None
@@ -59,6 +60,12 @@ class ChatState(rx.State):
             else:
                 self.not_found = False
             self.chat_session = result
+            messages = result.messages
+            for msg_obj in messages:
+                msg_txt = msg_obj.content
+                is_bot = False if msg_obj.role == "user" else True
+                self.append_message_to_ui(msg_txt, is_bot=is_bot)
+            
     
     def on_detail_load(self):
         session_id = self.get_session_id()
