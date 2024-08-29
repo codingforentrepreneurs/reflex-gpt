@@ -18,6 +18,13 @@ class ChatState(rx.State):
     def user_did_submit(self) -> bool:
         return self.did_submit
     
+    def get_session_id(self) -> int:
+        try:
+            my_session_id = int(self.router.page.params.get('session_id'))
+        except:
+            my_session_id = None
+        return my_session_id
+    
     def create_new_chat_session(self):
         with rx.session() as db_session:
             obj = ChatSession()
@@ -32,6 +39,12 @@ class ChatState(rx.State):
         self.messages = []
         yield
     
+    def on_detail_load(self):
+        print(self.get_session_id(), type(self.get_session_id()))
+        # session_id = self.get_session_id()
+        # if not isinstance(session_id, int):
+        #     self.invalid_lookup = True
+
     def on_load(self):
         print("running on load")
         if self.chat_session is None:
