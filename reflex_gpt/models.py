@@ -12,7 +12,7 @@ def get_utc_now() -> datetime:
 
 class ChatSession(rx.Model, table=True):
     # id
-    messages: List['ChatSessionMessageModel'] = Relationship(back_populates='chatsession')
+    messages: List['ChatSessionMessageModel'] = Relationship(back_populates='session')
     # title: str
     created_at: datetime = Field(
         default_factory=get_utc_now,
