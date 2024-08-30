@@ -169,3 +169,5 @@ cython_debug/
 #.idea/
 reflex-gpt
 reflex-gpt.pub
+devops/vars.yaml
+inventory.ini
