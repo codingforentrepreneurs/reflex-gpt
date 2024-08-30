@@ -1,0 +1,82 @@
+---
+- hosts: linode
+  become: true
+  vars:
+    project_dir: /app/
+    remote_env_file: "{{ project_dir }}/.env"
+    compose_file: "{{ project_dir }}/compose.prod.yaml"
+    env_file: "{{ playbook_dir | dirname }}/.env"
+  vars_files:
+    - "{{playbook_dir}}/vars.yaml"
+  tasks:
+    - name: Download Docker installation script
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: '0755'
+
+    - name: Run Docker installation script
+      shell: /tmp/get-docker.sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create project directory
+      file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy .env file to server
+      copy:
+        src: "{{ env_file }}"
+        dest: "{{ remote_env_file }}"
+      no_log: false
+
+    - name: Copy Docker Compose file to server
+      copy:
+        src: "{{ playbook_dir | dirname }}/compose.prod.yaml"
+        dest: "{{ compose_file }}"
+
+    - name: Login to Docker Hub
+      shell: echo {{ dockerhub_token }} | docker login -u {{ dockerhub_username }} --password-stdin
+      no_log: true
+
+    - name: Pull latest Docker images
+      shell:
+        cmd: docker compose -f compose.prod.yaml pull
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Update Docker services
+      shell:
+        cmd: |
+          services=$(docker compose -f compose.prod.yaml config --services)
+          for service in $services; do
+            if docker compose -f compose.prod.yaml ps --status running $service | grep -q $service; then
+              echo "Updating running service: $service"
+              docker compose -f compose.prod.yaml up -d --no-deps "$service"
+            else
+              echo "Starting service: $service"
+              docker compose -f compose.prod.yaml up -d --no-deps "$service"
+            fi
+          done
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Remove orphaned containers
+      shell:
+        cmd: docker compose -f compose.prod.yaml up -d --remove-orphans
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Prune Docker system
+      shell:
+        cmd: docker system prune -f
+      args:
+        chdir: "{{ project_dir }}"

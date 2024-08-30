@@ -1,0 +1,59 @@
+name: Deploy with Ansible
+
+on:
+  workflow_dispatch:
+
+env:
+  DOCKER_IMAGE: codingforentrepreneurs/reflex-gpt
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Add host key to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan ${{ secrets.VIRTUAL_MACHINE_IP }} >> ~/.ssh/known_hosts
+
+    - name: Create Ansible inventory
+      run: |
+        echo "[linode]" > inventory.ini
+        echo "${{ secrets.VIRTUAL_MACHINE_IP }} ansible_user=root" >> inventory.ini
+
+    - name: Create env file
+      run: |
+        cat << EOF > .env
+        DATABASE_URL=${{ secrets.DATABASE_URL }}
+        DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}
+        DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+        OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+        EOF
+
+    - name: Create Ansible Vars file
+      run: |
+        cat << EOF > devops/vars.yaml
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        EOF
+
+    - name: Run Ansible playbook
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
+      run: |
+        ansible-playbook -i inventory.ini devops/playbook.yaml
+
+    - name: Remove vars file
+      run: rm devops/vars.yaml && rm .env
+      if: always()

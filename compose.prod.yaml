@@ -1,0 +1,20 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: codingforentrepreneurs/reflex-gpt:latest
+    env_file:
+      - .env
+    ports:
+      - 80:3000
+    command: reflex run --env prod --frontend-only
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: codingforentrepreneurs/reflex-gpt:latest
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
